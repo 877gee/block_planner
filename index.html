@@ -168,8 +168,8 @@
     <main id="daily-view" class="flex-1 p-3.5 space-y-3.5 overflow-y-auto pb-10">
       
       <!-- Section 1: TODO -->
-      <section class="bg-white p-3.5 rounded-2xl border border-black/[0.04] shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
-        <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-black/[0.04]">
+      <section class="bg-white p-3 rounded-2xl border border-black/[0.04] shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-black/[0.04]">
           <div class="flex items-center space-x-2">
             <h2 class="text-xs font-bold tracking-tight text-neutral-900 font-brand">TODO</h2>
             <span id="todo-count" class="tabular-num text-[11px] font-semibold text-neutral-400 bg-[#f2f2f7] px-2 py-0.5 rounded-full">0/0</span>
@@ -178,8 +178,8 @@
 
         <!-- Add Input -->
         <div class="flex gap-1.5 mb-2">
-          <input type="text" id="new-todo-input" placeholder="새로운 할 일..." spellcheck="false" autocorrect="off" autocapitalize="off" class="flex-1 text-xs px-3.5 py-2.5 bg-[#f2f2f7] rounded-xl border border-transparent focus:outline-none focus:bg-white focus:border-neutral-300 font-medium transition">
-          <button id="add-todo-btn" class="bg-neutral-900 hover:bg-neutral-800 active:scale-95 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition">추가</button>
+          <input type="text" id="new-todo-input" placeholder="새로운 할 일..." spellcheck="false" autocorrect="off" autocapitalize="off" class="flex-1 text-xs px-3 py-1.5 bg-[#f2f2f7] rounded-xl border border-transparent focus:outline-none focus:bg-white focus:border-neutral-300 font-medium transition">
+          <button id="add-todo-btn" class="bg-neutral-900 hover:bg-neutral-800 active:scale-95 text-white text-xs font-semibold px-3.5 py-1.5 rounded-xl transition">추가</button>
         </div>
 
         <!-- To-Do List Items -->
@@ -188,29 +188,36 @@
         </div>
       </section>
 
-      <!-- Section 2: TOOLS & HIGHLIGHTERS (English Title) -->
-      <section class="bg-white rounded-2xl border border-black/[0.04] p-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
-        <div class="flex items-center justify-between mb-2.5">
+      <!-- Section 2: TOOLS & HIGHLIGHTERS (Collapsible Accordion, Default Collapsed) -->
+      <section class="bg-white rounded-2xl border border-black/[0.04] p-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all">
+        <div id="tools-header" class="flex items-center justify-between cursor-pointer select-none">
           <div class="flex items-center space-x-2">
             <h2 class="text-xs font-bold tracking-tight text-neutral-900 font-brand">tools & highlighters</h2>
-            <span id="current-mode-badge" class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-neutral-900 text-white font-brand">
+            <span id="current-mode-badge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-neutral-900 text-white font-brand">
               형광펜 모드
             </span>
           </div>
-          <button id="manage-highlighters-btn" class="text-[11px] text-neutral-400 hover:text-black font-semibold transition">
-            편집
-          </button>
+          <div class="flex items-center space-x-2">
+            <button id="manage-highlighters-btn" type="button" class="text-[11px] text-neutral-400 hover:text-black font-semibold transition px-1">
+              편집
+            </button>
+            <div id="tools-chevron-btn" class="w-5 h-5 rounded-full bg-[#f2f2f7] flex items-center justify-center text-neutral-500 transition-transform duration-200">
+              <svg id="tools-chevron" class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </div>
+          </div>
         </div>
 
-        <!-- Palette Buttons with Mode Switches -->
-        <div id="palette-container" class="flex flex-wrap gap-1.5 items-center">
+        <!-- Palette Buttons with Mode Switches (Default Collapsed!) -->
+        <div id="palette-container" class="hidden flex-wrap gap-1.5 items-center mt-2.5 pt-2.5 border-t border-black/[0.04] transition-all">
           <!-- Dynamically populated buttons -->
         </div>
       </section>
 
       <!-- Section 3: TIMETABLE -->
       <section class="bg-white rounded-2xl border border-black/[0.04] p-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.02)] relative">
-        <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-black/[0.04]">
+        <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-black/[0.04]">
           <h2 class="text-xs font-bold tracking-tight text-neutral-900 font-brand">timetable</h2>
           <button id="reset-day-slots-btn" class="text-[11px] text-neutral-400 hover:text-red-500 font-medium transition">초기화</button>
         </div>
@@ -222,7 +229,7 @@
       </section>
 
       <!-- Section 4: Daily Simple Memo -->
-      <section class="bg-white p-3.5 rounded-2xl border border-black/[0.04] shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+      <section class="bg-white p-3 rounded-2xl border border-black/[0.04] shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
         <div class="flex items-center space-x-1.5 mb-2 pb-1.5 border-b border-black/[0.04]">
           <h2 class="text-xs font-bold tracking-tight text-neutral-900 font-brand">memo</h2>
         </div>
@@ -310,6 +317,12 @@
       </div>
     </main>
 
+  </div>
+
+  <!-- Floating Mini Pill Dock Tooltip (Pops up with category name!) -->
+  <div id="dock-tooltip" class="fixed bottom-16 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 scale-90 transition-all duration-150 bg-neutral-900/95 backdrop-blur-md text-white text-[10.5px] font-bold px-3 py-1 rounded-full shadow-lg flex items-center space-x-1.5 border border-white/10 font-brand select-none">
+    <span id="dock-tooltip-dot" class="w-2 h-2 rounded-full inline-block"></span>
+    <span id="dock-tooltip-text">일상</span>
   </div>
 
   <!-- Floating Mini Pill Dock (Thumb Reach for Mobile & Desktop) -->
@@ -670,6 +683,33 @@
     }
 
 
+
+    // Floating Dock Cute Tooltip (Pop up category name on touch!)
+    let dockTooltipTimer = null;
+    function showDockTooltip(text, color) {
+      const tip = document.getElementById('dock-tooltip');
+      const tipText = document.getElementById('dock-tooltip-text');
+      const tipDot = document.getElementById('dock-tooltip-dot');
+      if (!tip || !tipText) return;
+
+      tipText.textContent = text;
+      if (color && tipDot) {
+        tipDot.style.backgroundColor = color;
+        tipDot.style.display = 'inline-block';
+      } else if (tipDot) {
+        tipDot.style.display = 'none';
+      }
+
+      tip.classList.remove('opacity-0', 'scale-90');
+      tip.classList.add('opacity-100', 'scale-100');
+
+      clearTimeout(dockTooltipTimer);
+      dockTooltipTimer = setTimeout(() => {
+        tip.classList.remove('opacity-100', 'scale-100');
+        tip.classList.add('opacity-0', 'scale-90');
+      }, 1100);
+    }
+
     // Floating Dock Render & Sync
     function renderDock() {
       if (!floatingDock || !dockDotsContainer) return;
@@ -695,6 +735,7 @@
         dot.addEventListener('click', () => {
           currentMode = 'highlight';
           selectedCategoryId = cat.id;
+          showDockTooltip(cat.name, cat.color);
           updateModeUI();
           renderPalette();
           renderDock();
@@ -729,6 +770,7 @@
     if (dockMealBtn) {
       dockMealBtn.addEventListener('click', () => {
         currentMode = (currentMode === 'meal') ? 'highlight' : 'meal';
+        showDockTooltip(currentMode === 'meal' ? '🍽️ 밥시간' : '형광펜 모드', '#8c5835');
         updateModeUI();
         renderPalette();
         renderDock();
@@ -739,6 +781,7 @@
     if (dockWriteBtn) {
       dockWriteBtn.addEventListener('click', () => {
         currentMode = (currentMode === 'write') ? 'highlight' : 'write';
+        showDockTooltip(currentMode === 'write' ? '✏️ 글쓰기' : '형광펜 모드', '#111111');
         updateModeUI();
         renderPalette();
         renderDock();
@@ -749,6 +792,7 @@
     if (dockEraserBtn) {
       dockEraserBtn.addEventListener('click', () => {
         currentMode = (currentMode === 'eraser') ? 'highlight' : 'eraser';
+        showDockTooltip(currentMode === 'eraser' ? '🧹 지우개' : '형광펜 모드', '#666666');
         updateModeUI();
         renderPalette();
         renderDock();
@@ -767,6 +811,28 @@
       } else if (currentMode === 'eraser') {
         currentModeBadge.textContent = '지우개 모드';
       }
+    }
+
+
+    // Section 2: Tools & Highlighters Collapsible Toggle (Default Collapsed!)
+    let isToolsExpanded = false;
+    const toolsHeader = document.getElementById('tools-header');
+    const toolsChevron = document.getElementById('tools-chevron');
+
+    if (toolsHeader) {
+      toolsHeader.addEventListener('click', (e) => {
+        if (e.target.closest('#manage-highlighters-btn')) return;
+        isToolsExpanded = !isToolsExpanded;
+        if (isToolsExpanded) {
+          paletteContainer.classList.remove('hidden');
+          paletteContainer.classList.add('flex');
+          if (toolsChevron) toolsChevron.classList.add('rotate-180');
+        } else {
+          paletteContainer.classList.remove('flex');
+          paletteContainer.classList.add('hidden');
+          if (toolsChevron) toolsChevron.classList.remove('rotate-180');
+        }
+      });
     }
 
     // Keyboard Shortcuts (1~7)
@@ -854,7 +920,7 @@
 
       todos.forEach(todo => {
         const item = document.createElement('div');
-        item.className = 'flex items-center justify-between p-2.5 rounded-xl bg-[#f8f8fa] hover:bg-[#f0f0f5] transition group';
+        item.className = 'flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-[#f8f8fa] hover:bg-[#f0f0f5] transition group';
         
         const left = document.createElement('div');
         left.className = 'flex items-center space-x-2.5 flex-1 cursor-pointer select-none';
@@ -865,15 +931,15 @@
         const checkIcon = document.createElement('div');
         if (status === 'done') {
           // Completed (✓)
-          checkIcon.className = 'w-4.5 h-4.5 rounded-full border-2 border-neutral-900 bg-neutral-900 text-white flex items-center justify-center transition flex-shrink-0';
+          checkIcon.className = 'w-4 h-4 rounded-full border-2 border-neutral-900 bg-neutral-900 text-white flex items-center justify-center transition flex-shrink-0';
           checkIcon.innerHTML = '<svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>';
         } else if (status === 'deferred') {
           // In Progress / Rolled over to tomorrow (→)
-          checkIcon.className = 'w-4.5 h-4.5 rounded-full border-2 border-neutral-800 bg-neutral-800 text-white flex items-center justify-center transition flex-shrink-0';
+          checkIcon.className = 'w-4 h-4 rounded-full border-2 border-neutral-800 bg-neutral-800 text-white flex items-center justify-center transition flex-shrink-0';
           checkIcon.innerHTML = '<svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>';
         } else {
           // Pending (○)
-          checkIcon.className = 'w-4.5 h-4.5 rounded-full border-2 border-neutral-300 hover:border-neutral-500 bg-white flex items-center justify-center transition flex-shrink-0';
+          checkIcon.className = 'w-4 h-4 rounded-full border-2 border-neutral-300 hover:border-neutral-500 bg-white flex items-center justify-center transition flex-shrink-0';
           checkIcon.innerHTML = '';
         }
 
@@ -1179,37 +1245,35 @@
               mealWrap.innerHTML = `<span class="text-xs select-none">🍽️</span>`;
             } else if (role === 'start') {
               mealWrap.innerHTML = `
-                <div class="flex items-center justify-between w-full h-full px-0.5">
+                <div class="flex items-center w-full h-full px-1 space-x-1">
                   <span class="text-xs select-none flex-shrink-0">🍽️</span>
-                  <svg class="w-full h-2 text-[#8c5835] ml-1" viewBox="0 0 30 10" fill="none" preserveAspectRatio="none">
-                    <path d="M0 5H24M20 2L25 5L20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
+                  <div class="flex-1 h-[2px] bg-[#8c5835]/80 rounded-full"></div>
                 </div>
               `;
             } else if (role === 'middle') {
               mealWrap.innerHTML = `
                 <div class="flex items-center justify-center w-full h-full px-0.5">
-                  <svg class="w-full h-2 text-[#8c5835]/70" viewBox="0 0 30 10" fill="none" preserveAspectRatio="none">
-                    <path d="M0 5H30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  </svg>
+                  <div class="w-full h-[2px] bg-[#8c5835]/70 rounded-full"></div>
                 </div>
               `;
             } else {
               mealWrap.innerHTML = `
-                <div class="flex items-center justify-center w-full h-full px-0.5">
-                  <svg class="w-full h-2 text-[#8c5835]" viewBox="0 0 30 10" fill="none" preserveAspectRatio="none">
-                    <path d="M0 5H24M20 2L25 5L20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <div class="flex items-center w-full h-full px-1 space-x-0.5">
+                  <div class="flex-1 h-[2px] bg-[#8c5835]/80 rounded-full"></div>
+                  <svg class="w-2.5 h-2.5 text-[#8c5835] flex-shrink-0 -ml-1" viewBox="0 0 10 10" fill="none">
+                    <path d="M2 1.5L7 5L2 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
               `;
             }
           } else {
-            // Multi-slot continuous meal track
+            // Multi-slot continuous meal track with NON-STRETCHING fixed vector arrow tip!
             mealWrap.innerHTML = `
-              <div class="flex items-center justify-between w-full h-full px-1">
+              <div class="flex items-center w-full h-full px-1.5 space-x-1">
                 <span class="text-xs select-none flex-shrink-0">🍽️</span>
-                <svg class="w-full h-2 text-[#8c5835] ml-2" viewBox="0 0 60 10" fill="none" preserveAspectRatio="none">
-                  <path d="M0 5H54M48 2L55 5L48 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <div class="flex-1 h-[2px] bg-[#8c5835]/80 rounded-full"></div>
+                <svg class="w-2.5 h-2.5 text-[#8c5835] flex-shrink-0 -ml-1" viewBox="0 0 10 10" fill="none">
+                  <path d="M2 1.5L7 5L2 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </div>
             `;
