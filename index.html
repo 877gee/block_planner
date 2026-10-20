@@ -46,14 +46,16 @@
       font-feature-settings: normal !important;
     }
 
+    .slot-cell:active {
+      transform: scale(0.97);
+    }
+
     .slot-cell {
       transition: background-color 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
       touch-action: pan-y;
       -webkit-user-select: none;
       user-select: none;
-    }
-    .slot-cell:active {
-      transform: scale(0.97);
+      overflow: hidden;
     }
 
     .slot-textarea {
@@ -68,6 +70,14 @@
       font-family: inherit;
       -webkit-spellcheck: false;
       spellcheck: false;
+      overflow: hidden !important;
+      -ms-overflow-style: none !important;
+      scrollbar-width: none !important;
+    }
+    .slot-textarea::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
     }
 
     /* Disable red squiggly spellcheck lines */
@@ -148,7 +158,7 @@
     </header>
 
     <!-- VIEW 1: DAILY VIEW -->
-    <main id="daily-view" class="flex-1 p-3.5 space-y-3.5 overflow-y-auto">
+    <main id="daily-view" class="flex-1 p-3.5 space-y-3.5 overflow-y-auto pb-10">
       
       <!-- Section 1: TODO -->
       <section class="bg-white p-3.5 rounded-2xl border border-black/[0.04] shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
@@ -293,6 +303,28 @@
       </div>
     </main>
 
+  </div>
+
+  <!-- Floating Mini Pill Dock (Thumb Reach for Mobile & Desktop) -->
+  <div id="floating-dock" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-white/95 backdrop-blur-xl border border-black/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.14)] rounded-full px-3 py-1.5 flex items-center gap-1.5 sm:gap-2 select-none transition-all">
+    <!-- Highlighter Color Dots Container -->
+    <div id="dock-dots-container" class="flex items-center gap-1.5"></div>
+    
+    <!-- Divider -->
+    <div class="w-[1px] h-4 bg-black/10 mx-0.5"></div>
+
+    <!-- Quick Tool Buttons -->
+    <div class="flex items-center gap-1">
+      <button id="dock-meal-btn" type="button" class="w-7 h-7 rounded-full flex items-center justify-center text-xs transition-all active:scale-95 cursor-pointer" title="밥시간">
+        🍽️
+      </button>
+      <button id="dock-write-btn" type="button" class="w-7 h-7 rounded-full flex items-center justify-center text-xs transition-all active:scale-95 cursor-pointer" title="글쓰기">
+        ✏️
+      </button>
+      <button id="dock-eraser-btn" type="button" class="w-7 h-7 rounded-full flex items-center justify-center text-xs transition-all active:scale-95 cursor-pointer" title="지우개">
+        🧹
+      </button>
+    </div>
   </div>
 
   <!-- Highlighter Management Modal -->
@@ -541,10 +573,18 @@
     const manageList = document.getElementById('manage-list');
     const manageModalCloseBtn = document.getElementById('manage-modal-close-btn');
     const manageSaveBtn = document.getElementById('manage-save-btn');
+
+    // Floating Dock Elements
+    const floatingDock = document.getElementById('floating-dock');
+    const dockDotsContainer = document.getElementById('dock-dots-container');
+    const dockMealBtn = document.getElementById('dock-meal-btn');
+    const dockWriteBtn = document.getElementById('dock-write-btn');
+    const dockEraserBtn = document.getElementById('dock-eraser-btn');
     const addHighlighterBtn = document.getElementById('add-highlighter-btn');
 
     // Render Palette with Apple Tag Style
     function renderPalette() {
+      if (typeof renderDock === 'function') renderDock();
       paletteContainer.innerHTML = '';
 
       // Highlighters
@@ -620,6 +660,93 @@
         renderDaily();
       });
       paletteContainer.appendChild(eraserBtn);
+    }
+
+
+    // Floating Dock Render & Sync
+    function renderDock() {
+      if (!floatingDock || !dockDotsContainer) return;
+      floatingDock.style.display = (currentView === 'daily') ? 'flex' : 'none';
+
+      dockDotsContainer.innerHTML = '';
+      categories.forEach((cat, idx) => {
+        const isSelected = (currentMode === 'highlight' && selectedCategoryId === cat.id);
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.title = cat.name;
+        const numberKey = idx < 9 ? (idx + 1) : '';
+
+        dot.className = `w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all active:scale-90 cursor-pointer ${
+          isSelected 
+            ? 'ring-2 ring-neutral-900 ring-offset-2 scale-110 shadow-sm' 
+            : 'opacity-85 hover:opacity-100 hover:scale-105'
+        }`;
+        dot.style.backgroundColor = cat.color;
+        dot.style.color = cat.text;
+        dot.innerHTML = `<span class="tabular-num">${numberKey}</span>`;
+
+        dot.addEventListener('click', () => {
+          currentMode = 'highlight';
+          selectedCategoryId = cat.id;
+          updateModeUI();
+          renderPalette();
+          renderDock();
+          renderDaily();
+        });
+
+        dockDotsContainer.appendChild(dot);
+      });
+
+      if (dockMealBtn) {
+        const isMealSelected = (currentMode === 'meal');
+        dockMealBtn.className = `w-7 h-7 rounded-full flex items-center justify-center text-xs transition-all active:scale-95 cursor-pointer ${
+          isMealSelected ? 'bg-neutral-900 text-white shadow-xs ring-2 ring-neutral-900 ring-offset-1 scale-105' : 'bg-[#f2f2f7] hover:bg-[#e5e5ea] text-neutral-800'
+        }`;
+      }
+
+      if (dockWriteBtn) {
+        const isWriteSelected = (currentMode === 'write');
+        dockWriteBtn.className = `w-7 h-7 rounded-full flex items-center justify-center text-xs transition-all active:scale-95 cursor-pointer ${
+          isWriteSelected ? 'bg-neutral-900 text-white shadow-xs ring-2 ring-neutral-900 ring-offset-1 scale-105' : 'bg-[#f2f2f7] hover:bg-[#e5e5ea] text-neutral-800'
+        }`;
+      }
+
+      if (dockEraserBtn) {
+        const isEraserSelected = (currentMode === 'eraser');
+        dockEraserBtn.className = `w-7 h-7 rounded-full flex items-center justify-center text-xs transition-all active:scale-95 cursor-pointer ${
+          isEraserSelected ? 'bg-neutral-900 text-white shadow-xs ring-2 ring-neutral-900 ring-offset-1 scale-105' : 'bg-[#f2f2f7] hover:bg-[#e5e5ea] text-neutral-800'
+        }`;
+      }
+    }
+
+    if (dockMealBtn) {
+      dockMealBtn.addEventListener('click', () => {
+        currentMode = (currentMode === 'meal') ? 'highlight' : 'meal';
+        updateModeUI();
+        renderPalette();
+        renderDock();
+        renderDaily();
+      });
+    }
+
+    if (dockWriteBtn) {
+      dockWriteBtn.addEventListener('click', () => {
+        currentMode = (currentMode === 'write') ? 'highlight' : 'write';
+        updateModeUI();
+        renderPalette();
+        renderDock();
+        renderDaily();
+      });
+    }
+
+    if (dockEraserBtn) {
+      dockEraserBtn.addEventListener('click', () => {
+        currentMode = (currentMode === 'eraser') ? 'highlight' : 'eraser';
+        updateModeUI();
+        renderPalette();
+        renderDock();
+        renderDaily();
+      });
     }
 
     // Concise Mode Badge
@@ -902,7 +1029,75 @@
     // 1. High-contrast Black-on-White with 1.5px Black stroke for Hour labels
     // 2. Seamless continuous meal arrow track (15m, 30m, 1h+) without font clutter
     // 3. Vertically/horizontally centered multi-line text (2~3 lines)
-    // Single Hour Row Builder (Used for both full render and instant in-place row refresh)
+    // Group 4 slots of an hour row into merged visual capsules
+    function getHourGroups(slots, hour) {
+      const groups = [];
+      let current = null;
+
+      for (let s = 0; s < 4; s++) {
+        const k = `${hour}:${s}`;
+        const data = slots[k];
+        const catId = (data && data.catId) ? data.catId : null;
+        const text = (data && data.text) ? data.text.trim() : '';
+
+        let canMerge = false;
+        if (current && current.catId === catId) {
+          if (catId === null) {
+            // Keep uncolored slots separate (span 1 each) so user sees :00, :15, :30, :45 clearly
+            canMerge = false;
+          } else if (catId === 'meal') {
+            canMerge = true;
+          } else {
+            // Category highlighter:
+            // If next slot is empty, it extends current block
+            // If next slot has non-empty text, it can only merge if current block has the exact same text
+            if (!text) {
+              canMerge = true;
+            } else if (current.text === text) {
+              canMerge = true;
+            } else {
+              canMerge = false;
+            }
+          }
+        }
+
+        if (canMerge) {
+          current.slots.push(s);
+          current.span += 1;
+          if (!current.text && text) {
+            current.text = text;
+            current.textSlot = s;
+          }
+        } else {
+          if (current) groups.push(current);
+          current = {
+            catId: catId,
+            text: text,
+            textSlot: s,
+            start: s,
+            slots: [s],
+            span: 1
+          };
+        }
+      }
+      if (current) groups.push(current);
+      return groups;
+    }
+
+    // Helper: Determine target slot key when clicking inside a multi-slot group capsule
+    function getGroupTargetSlotKey(clientX, cell, group, hour) {
+      if (group.span === 1) return `${hour}:${group.slots[0]}`;
+      const rect = cell.getBoundingClientRect();
+      const clickX = Math.max(0, clientX - rect.left);
+      const ratio = Math.max(0, Math.min(0.999, clickX / rect.width));
+      const offset = Math.floor(ratio * group.span);
+      return `${hour}:${group.slots[offset]}`;
+    }
+
+    // Single Hour Row Builder:
+    // 1. Groups adjacent same-category slots into single capsules
+    // 2. Horizontally centers multi-line text across the entire merged capsule width
+    // 3. Allows instant 1-tap slot coloring and double-tap direct writing
     function createHourRow(hour, dayData) {
       const slots = dayData.slots || {};
       const isTodayView = (currentDate === getTodayString());
@@ -925,41 +1120,19 @@
       slotsGrid.className = 'flex-1 grid grid-cols-4 gap-1 relative z-10';
 
       const subTimes = ['00', '15', '30', '45'];
+      const groups = getHourGroups(slots, hour);
 
-      [0, 1, 2, 3].forEach(slotIdx => {
-        const slotKey = `${hour}:${slotIdx}`;
-        const slotData = slots[slotKey] || null;
-        const isMeal = (slotData && slotData.catId === 'meal');
-        const cat = (!isMeal && slotData && slotData.catId) ? categories.find(c => c.id === slotData.catId) : null;
-        const textVal = slotData && slotData.text ? slotData.text : '';
-
-        // Neighbor check for seamless merging
-        const prevSlotData = slotIdx > 0 ? slots[`${hour}:${slotIdx - 1}`] : null;
-        const nextSlotData = slotIdx < 3 ? slots[`${hour}:${slotIdx + 1}`] : null;
-
-        const currentCatId = slotData ? slotData.catId : null;
-        const prevCatId = prevSlotData ? prevSlotData.catId : null;
-        const nextCatId = nextSlotData ? nextSlotData.catId : null;
-
-        const hasSameLeft = Boolean(currentCatId && prevCatId === currentCatId);
-        const hasSameRight = Boolean(currentCatId && nextCatId === currentCatId);
-
-        let mergeClasses = 'rounded-lg border';
-        if (currentCatId) {
-          if (hasSameLeft && hasSameRight) {
-            mergeClasses = 'rounded-none border-y border-x-0 -mr-[5px] z-10';
-          } else if (!hasSameLeft && hasSameRight) {
-            mergeClasses = 'rounded-l-lg rounded-r-none border-y border-l border-r-0 -mr-[5px] z-10';
-          } else if (hasSameLeft && !hasSameRight) {
-            mergeClasses = 'rounded-r-lg rounded-l-none border-y border-r border-l-0 z-10';
-          } else {
-            mergeClasses = 'rounded-lg border';
-          }
-        }
+      groups.forEach(group => {
+        const isMeal = (group.catId === 'meal');
+        const cat = (!isMeal && group.catId) ? categories.find(c => c.id === group.catId) : null;
+        const textVal = group.text || '';
+        const isHighlighted = Boolean(cat || isMeal);
 
         const cell = document.createElement('div');
-        cell.className = `slot-cell relative h-[46px] flex flex-col justify-center items-center p-1 cursor-pointer select-none ${mergeClasses}`;
-        cell.setAttribute('data-slot-key', slotKey);
+        cell.className = 'slot-cell relative h-[46px] flex flex-col justify-center items-center p-1 cursor-pointer select-none rounded-lg border transition-all';
+        cell.style.gridColumn = `span ${group.span}`;
+        cell.setAttribute('data-group-start', `${hour}:${group.start}`);
+        cell.setAttribute('data-group-span', String(group.span));
 
         if (isMeal) {
           cell.style.backgroundColor = '#faf5f0';
@@ -971,19 +1144,16 @@
           cell.className += ' bg-[#f8f8fa] border-black/[0.04] hover:bg-[#f0f0f5]';
         }
 
-        // Time indicator
+        // Time indicator (start time badge)
         const timeBadge = document.createElement('span');
-        const isHighlighted = Boolean(cat || isMeal || (slotData && slotData.catId));
         timeBadge.className = 'absolute top-1 right-1.5 tabular-num text-[8px] font-semibold leading-none pointer-events-none z-10';
-        timeBadge.textContent = subTimes[slotIdx];
+        timeBadge.textContent = subTimes[group.start];
         if (isHighlighted) {
-          timeBadge.style.opacity = '0.3';
+          timeBadge.style.opacity = '0.35';
           if (cat) {
             timeBadge.style.color = cat.text;
           } else if (isMeal) {
             timeBadge.style.color = '#8c5835';
-          } else {
-            timeBadge.style.color = '#111111';
           }
         } else {
           timeBadge.style.opacity = '1';
@@ -991,46 +1161,59 @@
         }
         cell.appendChild(timeBadge);
 
-        // Content
+        // Content: Meal Track vs Centered Textarea
         if (isMeal) {
-          const mealRole = getMealRole(slotKey, slots);
           const mealWrap = document.createElement('div');
-          mealWrap.className = 'w-full h-full flex items-center justify-center pointer-events-none px-1';
+          mealWrap.className = 'w-full h-full flex items-center justify-center pointer-events-none px-1.5';
 
-          if (mealRole === 'single') {
-            mealWrap.innerHTML = `<span class="text-base select-none">🍽️</span>`;
-          } else if (mealRole === 'start') {
+          if (group.span === 1) {
+            const role = getMealRole(`${hour}:${group.slots[0]}`, slots);
+            if (role === 'single') {
+              mealWrap.innerHTML = `<span class="text-base select-none">🍽️</span>`;
+            } else if (role === 'start') {
+              mealWrap.innerHTML = `
+                <div class="flex items-center justify-between w-full h-full px-0.5">
+                  <span class="text-sm select-none flex-shrink-0">🍽️</span>
+                  <svg class="w-full h-2.5 text-[#8c5835] ml-1" viewBox="0 0 30 10" fill="none" preserveAspectRatio="none">
+                    <path d="M0 5H24M20 2L25 5L20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              `;
+            } else if (role === 'middle') {
+              mealWrap.innerHTML = `
+                <div class="flex items-center justify-center w-full h-full px-0.5">
+                  <svg class="w-full h-2.5 text-[#8c5835]/70" viewBox="0 0 30 10" fill="none" preserveAspectRatio="none">
+                    <path d="M0 5H30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              `;
+            } else {
+              mealWrap.innerHTML = `
+                <div class="flex items-center justify-center w-full h-full px-0.5">
+                  <svg class="w-full h-2.5 text-[#8c5835]" viewBox="0 0 30 10" fill="none" preserveAspectRatio="none">
+                    <path d="M0 5H24M20 2L25 5L20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              `;
+            }
+          } else {
+            // Multi-slot continuous meal track
             mealWrap.innerHTML = `
-              <div class="flex items-center justify-between w-full h-full px-0.5">
+              <div class="flex items-center justify-between w-full h-full px-1">
                 <span class="text-sm select-none flex-shrink-0">🍽️</span>
-                <svg class="w-full h-2.5 text-[#8c5835] ml-1" viewBox="0 0 30 10" fill="none" preserveAspectRatio="none">
-                  <path d="M0 5H24M20 2L25 5L20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </div>
-            `;
-          } else if (mealRole === 'middle') {
-            mealWrap.innerHTML = `
-              <div class="flex items-center justify-center w-full h-full px-0.5">
-                <svg class="w-full h-2.5 text-[#8c5835]/70" viewBox="0 0 30 10" fill="none" preserveAspectRatio="none">
-                  <path d="M0 5H30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </div>
-            `;
-          } else if (mealRole === 'end') {
-            mealWrap.innerHTML = `
-              <div class="flex items-center justify-center w-full h-full px-0.5">
-                <svg class="w-full h-2.5 text-[#8c5835]" viewBox="0 0 30 10" fill="none" preserveAspectRatio="none">
-                  <path d="M0 5H24M20 2L25 5L20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <svg class="w-full h-2.5 text-[#8c5835] ml-2" viewBox="0 0 60 10" fill="none" preserveAspectRatio="none">
+                  <path d="M0 5H54M48 2L55 5L48 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </div>
             `;
           }
           cell.appendChild(mealWrap);
         } else {
+          // Centered Textarea across the entire merged capsule width!
           const textarea = document.createElement('textarea');
           textarea.value = textVal;
-          textarea.setAttribute('data-slot-input', slotKey);
-          textarea.className = 'slot-textarea text-[10px] font-semibold text-center leading-snug p-0 m-0 z-20 transition-all';
+          textarea.setAttribute('data-slot-input', `${hour}:${group.textSlot}`);
+          textarea.className = 'slot-textarea text-[10px] sm:text-[11px] font-semibold text-center leading-snug p-0 m-0 z-20 transition-all font-brand overflow-hidden no-scrollbar';
           textarea.setAttribute('spellcheck', 'false');
           textarea.setAttribute('autocorrect', 'off');
           textarea.setAttribute('autocapitalize', 'off');
@@ -1039,9 +1222,9 @@
           function updateTextareaFit() {
             const val = textarea.value || '';
             const lines = val.split('\n');
-            if (!val || (lines.length <= 1 && val.length <= 7)) {
+            if (!val || (lines.length <= 1 && val.length <= (7 * group.span))) {
               textarea.rows = 1;
-              textarea.style.height = '14px';
+              textarea.style.height = '15px';
             } else {
               textarea.rows = 2;
               textarea.style.height = '28px';
@@ -1064,12 +1247,21 @@
 
           textarea.addEventListener('input', () => {
             updateTextareaFit();
+            const val = textarea.value;
             updateDayData(currentDate, data => {
               if (!data.slots) data.slots = {};
-              if (!data.slots[slotKey]) {
-                data.slots[slotKey] = { catId: null, text: textarea.value };
+              const mainKey = `${hour}:${group.textSlot}`;
+              if (!data.slots[mainKey]) {
+                data.slots[mainKey] = { catId: group.catId, text: val };
               } else {
-                data.slots[slotKey].text = textarea.value;
+                data.slots[mainKey].text = val;
+              }
+              // Clear other slots in this merged group so text stays centralized
+              for (let si = 1; si < group.slots.length; si++) {
+                const otherKey = `${hour}:${group.slots[si]}`;
+                if (data.slots[otherKey]) {
+                  data.slots[otherKey].text = '';
+                }
               }
             });
           });
@@ -1096,36 +1288,33 @@
           const t = e.touches[0];
           const dx = Math.abs(t.clientX - touchStartX);
           const dy = Math.abs(t.clientY - touchStartY);
-          // If finger moves more than 7px, this is definitely a scroll!
           if (dx > 7 || dy > 7) {
             isTouchScroll = true;
           }
         }, { passive: true });
 
         cell.addEventListener('touchend', (e) => {
-          if (isTouchScroll) {
-            // User was scrolling the screen! Do not trigger color!
-            return;
-          }
+          if (isTouchScroll) return;
           const elapsed = Date.now() - touchStartTime;
           if (elapsed < 450) {
-            // Deliberate clean tap!
             e.preventDefault();
-            handleCellTap(slotKey);
+            const t = (e.changedTouches && e.changedTouches[0]) || (e.touches && e.touches[0]);
+            const clientX = t ? t.clientX : (cell.getBoundingClientRect().left + 10);
+            const slotKey = getGroupTargetSlotKey(clientX, cell, group, hour);
+            handleCellTap(slotKey, cell);
           }
         });
 
         // DESKTOP MOUSE CLICK & DRAG
         cell.addEventListener('click', (e) => {
-          if (Date.now() - touchStartTime < 600) {
-            // Handled by touchend on touch screens
-            return;
-          }
-          handleCellTap(slotKey);
+          if (Date.now() - touchStartTime < 600) return;
+          const slotKey = getGroupTargetSlotKey(e.clientX, cell, group, hour);
+          handleCellTap(slotKey, cell);
         });
 
         cell.addEventListener('mousedown', (e) => {
           if (e.button !== 0 || currentMode === 'write') return;
+          const slotKey = getGroupTargetSlotKey(e.clientX, cell, group, hour);
           isMouseDragging = true;
           dragModeAction = (cat && cat.id === selectedCategoryId) ? 'erase' : 'paint';
           if (currentMode === 'meal') dragModeAction = isMeal ? 'eraseMeal' : 'meal';
@@ -1135,6 +1324,7 @@
 
         cell.addEventListener('mouseenter', (e) => {
           if (isMouseDragging && e.buttons === 1 && (currentMode === 'highlight' || currentMode === 'eraser' || currentMode === 'meal')) {
+            const slotKey = getGroupTargetSlotKey(e.clientX, cell, group, hour);
             handleCellAction(slotKey, dragModeAction);
           }
         });
@@ -1178,11 +1368,34 @@
       });
     }
 
-    // Instant In-Place Cell Tap Handler (No full page reload, no scroll jumping!)
-    function handleCellTap(slotKey) {
+    // Instant In-Place Cell Tap Handler (Supports quick double-tap for direct writing!)
+    let lastTapTime = 0;
+    let lastTapKey = null;
+
+    function handleCellTap(slotKey, cell) {
+      const now = Date.now();
+      if (lastTapKey === slotKey && (now - lastTapTime) < 350) {
+        // Quick double tap: switch to write mode and focus text immediately!
+        currentMode = 'write';
+        updateModeUI();
+        renderPalette();
+        renderDock();
+        const ta = cell ? cell.querySelector('textarea') : document.querySelector(`textarea[data-slot-input="${slotKey}"]`);
+        if (ta) {
+          ta.style.pointerEvents = 'auto';
+          ta.focus();
+        }
+        lastTapKey = null;
+        return;
+      }
+      lastTapTime = now;
+      lastTapKey = slotKey;
+
       if (currentMode === 'write') {
-        const ta = document.querySelector(`textarea[data-slot-input="${slotKey}"]`);
-        if (ta) ta.focus();
+        const ta = cell ? cell.querySelector('textarea') : document.querySelector(`textarea[data-slot-input="${slotKey}"]`);
+        if (ta) {
+          ta.focus();
+        }
         return;
       }
 
@@ -1299,6 +1512,7 @@
 
     // Tab Switching
     function setView(view) {
+      if (typeof renderDock === 'function') renderDock();
       currentView = view;
       [tabDailyBtn, tabWeeklyBtn, tabMonthlyBtn].forEach(b => {
         b.className = 'px-3.5 py-1 text-xs font-medium rounded-full text-neutral-500 hover:text-black transition-all';
@@ -1795,6 +2009,7 @@
     loadCategories();
     initializeSeedData();
     renderPalette();
+    renderDock();
     updateModeUI();
     renderDaily();
   </script>
