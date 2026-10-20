@@ -50,6 +50,13 @@
       transform: scale(0.97);
     }
 
+    .timetable-row {
+      margin-top: 4px !important;
+    }
+    .timetable-row:first-child {
+      margin-top: 0 !important;
+    }
+
     .slot-cell {
       transition: background-color 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
       touch-action: pan-y;
@@ -209,7 +216,7 @@
         </div>
 
         <!-- Timetable Grid: 06:00 to 03:00 -->
-        <div id="timetable-rows" class="space-y-1.5 text-xs relative select-none pt-0.5 min-h-[1200px]" style="touch-action: pan-y;">
+        <div id="timetable-rows" class="space-y-1 text-xs relative select-none pt-0.5" style="touch-action: pan-y;">
           <!-- Dynamically generated rows -->
         </div>
       </section>
@@ -1106,12 +1113,12 @@
       const currentMinute = now.getMinutes();
 
       const row = document.createElement('div');
-      row.className = 'flex items-center gap-1.5 py-0.5 group relative';
+      row.className = 'timetable-row flex items-center gap-1.5 py-0 group relative';
       row.setAttribute('data-hour', String(hour));
 
       // Hour Label
       const hourLabel = document.createElement('div');
-      hourLabel.className = 'w-11 text-center tabular-num text-xs py-2 bg-white text-neutral-700 font-semibold rounded-lg flex-shrink-0 border border-neutral-200/90 shadow-[0_1px_2px_rgba(0,0,0,0.03)] z-10 font-brand';
+      hourLabel.className = 'w-11 h-[32px] flex items-center justify-center text-center tabular-num text-[11px] bg-white text-neutral-700 font-semibold rounded-lg flex-shrink-0 border border-neutral-200/90 shadow-[0_1px_2px_rgba(0,0,0,0.03)] z-10 font-brand';
       hourLabel.textContent = `${String(hour).padStart(2, '0')}:00`;
       row.appendChild(hourLabel);
 
@@ -1129,7 +1136,7 @@
         const isHighlighted = Boolean(cat || isMeal);
 
         const cell = document.createElement('div');
-        cell.className = 'slot-cell relative h-[46px] flex flex-col justify-center items-center p-1 cursor-pointer select-none rounded-lg border transition-all';
+        cell.className = 'slot-cell relative h-[32px] flex flex-col justify-center items-center p-0.5 cursor-pointer select-none rounded-lg border transition-all';
         cell.style.gridColumn = `span ${group.span}`;
         cell.setAttribute('data-group-start', `${hour}:${group.start}`);
         cell.setAttribute('data-group-span', String(group.span));
@@ -1146,7 +1153,7 @@
 
         // Time indicator (start time badge)
         const timeBadge = document.createElement('span');
-        timeBadge.className = 'absolute top-1 right-1.5 tabular-num text-[8px] font-semibold leading-none pointer-events-none z-10';
+        timeBadge.className = 'absolute top-0.5 right-1 tabular-num text-[7.5px] font-semibold leading-none pointer-events-none z-10';
         timeBadge.textContent = subTimes[group.start];
         if (isHighlighted) {
           timeBadge.style.opacity = '0.35';
@@ -1169,12 +1176,12 @@
           if (group.span === 1) {
             const role = getMealRole(`${hour}:${group.slots[0]}`, slots);
             if (role === 'single') {
-              mealWrap.innerHTML = `<span class="text-base select-none">🍽️</span>`;
+              mealWrap.innerHTML = `<span class="text-xs select-none">🍽️</span>`;
             } else if (role === 'start') {
               mealWrap.innerHTML = `
                 <div class="flex items-center justify-between w-full h-full px-0.5">
-                  <span class="text-sm select-none flex-shrink-0">🍽️</span>
-                  <svg class="w-full h-2.5 text-[#8c5835] ml-1" viewBox="0 0 30 10" fill="none" preserveAspectRatio="none">
+                  <span class="text-xs select-none flex-shrink-0">🍽️</span>
+                  <svg class="w-full h-2 text-[#8c5835] ml-1" viewBox="0 0 30 10" fill="none" preserveAspectRatio="none">
                     <path d="M0 5H24M20 2L25 5L20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
@@ -1182,7 +1189,7 @@
             } else if (role === 'middle') {
               mealWrap.innerHTML = `
                 <div class="flex items-center justify-center w-full h-full px-0.5">
-                  <svg class="w-full h-2.5 text-[#8c5835]/70" viewBox="0 0 30 10" fill="none" preserveAspectRatio="none">
+                  <svg class="w-full h-2 text-[#8c5835]/70" viewBox="0 0 30 10" fill="none" preserveAspectRatio="none">
                     <path d="M0 5H30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                   </svg>
                 </div>
@@ -1190,7 +1197,7 @@
             } else {
               mealWrap.innerHTML = `
                 <div class="flex items-center justify-center w-full h-full px-0.5">
-                  <svg class="w-full h-2.5 text-[#8c5835]" viewBox="0 0 30 10" fill="none" preserveAspectRatio="none">
+                  <svg class="w-full h-2 text-[#8c5835]" viewBox="0 0 30 10" fill="none" preserveAspectRatio="none">
                     <path d="M0 5H24M20 2L25 5L20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                   </svg>
                 </div>
@@ -1200,8 +1207,8 @@
             // Multi-slot continuous meal track
             mealWrap.innerHTML = `
               <div class="flex items-center justify-between w-full h-full px-1">
-                <span class="text-sm select-none flex-shrink-0">🍽️</span>
-                <svg class="w-full h-2.5 text-[#8c5835] ml-2" viewBox="0 0 60 10" fill="none" preserveAspectRatio="none">
+                <span class="text-xs select-none flex-shrink-0">🍽️</span>
+                <svg class="w-full h-2 text-[#8c5835] ml-2" viewBox="0 0 60 10" fill="none" preserveAspectRatio="none">
                   <path d="M0 5H54M48 2L55 5L48 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </div>
@@ -1224,10 +1231,10 @@
             const lines = val.split('\n');
             if (!val || (lines.length <= 1 && val.length <= (7 * group.span))) {
               textarea.rows = 1;
-              textarea.style.height = '15px';
+              textarea.style.height = '14px';
             } else {
               textarea.rows = 2;
-              textarea.style.height = '28px';
+              textarea.style.height = '24px';
             }
           }
           updateTextareaFit();
