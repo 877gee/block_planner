@@ -1128,7 +1128,7 @@
         let canMerge = false;
         if (current && current.catId === catId) {
           if (catId === null) {
-            // Keep uncolored slots separate (span 1 each) so user sees :00, :15, :30, :45 clearly
+            // Keep uncolored slots separate (span 1 each) so user sees :15, :30, :45, :00 clearly
             canMerge = false;
           } else if (catId === 'meal') {
             canMerge = true;
@@ -1204,7 +1204,7 @@
       const slotsGrid = document.createElement('div');
       slotsGrid.className = 'flex-1 grid grid-cols-4 gap-1 relative z-10';
 
-      const subTimes = ['00', '15', '30', '45'];
+      const subTimes = ['15', '30', '45', '00'];
       const groups = getHourGroups(slots, hour);
 
       groups.forEach(group => {
@@ -1229,10 +1229,10 @@
           cell.className += ' bg-[#f8f8fa] border-black/[0.04] hover:bg-[#f0f0f5]';
         }
 
-        // Time indicator (start time badge)
+        // Time indicator (15-min mark badge: 15, 30, 45, 00)
         const timeBadge = document.createElement('span');
         timeBadge.className = 'absolute top-0.5 right-1 tabular-num text-[7.5px] font-semibold leading-none pointer-events-none z-10';
-        timeBadge.textContent = subTimes[group.start];
+        timeBadge.textContent = subTimes[group.start + group.span - 1];
         if (isHighlighted) {
           timeBadge.style.opacity = '0.35';
           if (cat) {
